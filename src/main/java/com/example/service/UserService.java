@@ -2,28 +2,39 @@ package com.example.service;
 
 import com.example.domain.User;
 import com.example.messaging.UserCreatedProducer;
-import jakarta.ejb.Stateless;
-import jakarta.inject.Inject;
+import com.example.persistence.Jpa;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import java.util.List;
 
-@Stateless
 public class UserService {
 
-    @PersistenceContext
-    EntityManager em;
+    private EntityManager em = Jpa.getEntityManager();
+    private UserCreatedProducer producer = new UserCreatedProducer();
 
-    @Inject
-    UserCreatedProducer producer;
+    public User createUser(User user) {
+        try {
+            em.getTransaction().begin();
+            em.persist(user);
+            em.getTransaction().commit();
 
-    public User createUser(String name, String email) {
-        User u = new User(name, email);
-        em.persist(u);
-        producer.sendUserCreatedEvent(u);
-        return u;
+            // 🔔 Envoi du message JMS
+            producer.sendUserCreatedEvent(user.getId(), user.getEmail());
+
+            return user;
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            throw e;
+        }
     }
 
-    public User findUser(Long id) {
+    public List<User> getAllUsers() {
+        return em.createQuery("SELECT u FROM User u", User.class)
+                .getResultList();
+    }
+
+    public User getUserById(Long id) {
         return em.find(User.class, id);
     }
+
 }
