@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "tasks")
 public class Task {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idTask;
 
     private String nameTask;
@@ -42,4 +42,8 @@ public class Task {
     public void setIdUser(Long idUser) { this.idUser = idUser; }
     public void setIdTeam(Long idTeam) { this.idTeam = idTeam; }
     public void setIdStatut(Long idStatut) { this.idStatut = idStatut; }
+
+    public void setIdTask(Long idTask) {
+    this.idTask = idTask;
+}
 }
