@@ -25,4 +25,37 @@ public class UserRepository {
         em.close();
         return user;
     }
+
+    public User update(User user) {
+        EntityManager em = Jpa.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            User updatedUser = em.merge(user);
+            tx.commit();
+            return updatedUser;
+        } finally {
+            em.close();
+        }
+    }
+
+    public boolean delete(Long id) {
+        EntityManager em = Jpa.getEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            User user = em.find(User.class, id);
+            if (user != null) {
+                em.remove(user);
+                tx.commit();
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
 }

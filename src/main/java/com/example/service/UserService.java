@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.domain.User;
+import com.example.dao.UserRepository;
 import com.example.messaging.UserCreatedProducer;
 import com.example.persistence.Jpa;
 import jakarta.persistence.EntityManager;
@@ -35,6 +36,16 @@ public class UserService {
 
     public User getUserById(Long id) {
         return em.find(User.class, id);
+    }
+
+    public User updateUser(User user) {
+        return userRepository.update(user);
+    }
+
+    private final UserRepository userRepository = new UserRepository();
+
+    public boolean deleteUser(Long id) {
+        return userRepository.delete(id);
     }
 
 }

@@ -8,8 +8,9 @@ public class TaskService {
 
     private final TaskRepository taskRepository = new TaskRepository();
 
-    public Task createTask(Task task) {
-        return taskRepository.save(task);
+
+    public Task createTask(Task task, Long userId, Long teamId) {
+        return taskRepository.save(task, userId, teamId);
     }
 
     public List<Task> getAllTasks() {
@@ -18,9 +19,5 @@ public class TaskService {
 
     public Task getTaskById(Long id) {
         return taskRepository.findById(id);
-    }
-
-    public void deleteTask(Long id) {
-        taskRepository.delete(id);
     }
 }

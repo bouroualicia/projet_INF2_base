@@ -40,4 +40,22 @@ public class UserResource {
         return Response.ok(user).build();
     }
 
+    @PUT
+    @Path("/{id}")
+    public Response updateUser(@PathParam("id") Long id, User user) {
+        user.setId(id);
+        User updated = userService.updateUser(user);
+        return Response.ok(updated).build();
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteUser(@PathParam("id") Long id) {
+        boolean deleted = userService.deleteUser(id);
+        if (deleted) {
+            return Response.noContent().build(); // Renvoie 204
+        }
+        return Response.status(Response.Status.NOT_FOUND).build();
+    }
+
 }
