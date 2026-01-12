@@ -12,6 +12,7 @@
         <class>com.example.domain.Task</class>
         <class>com.example.domain.Team</class>
         <class>com.example.domain.Statut</class>
+        <class>com.example.domain.AuditLog</class>
 
         <properties>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>

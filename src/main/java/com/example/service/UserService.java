@@ -1,12 +1,13 @@
 package com.example.service;
 
-import com.example.domain.User;
+import java.util.List;
+
 import com.example.dao.UserRepository;
+import com.example.domain.User;
 import com.example.messaging.UserCreatedProducer;
 import com.example.persistence.Jpa;
+
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import java.util.List;
 
 public class UserService {
 
@@ -18,8 +19,6 @@ public class UserService {
             em.getTransaction().begin();
             em.persist(user);
             em.getTransaction().commit();
-
-            // 🔔 Envoi du message JMS
             producer.sendUserCreatedEvent(user.getId(), user.getEmail());
 
             return user;

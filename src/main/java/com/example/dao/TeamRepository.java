@@ -1,10 +1,12 @@
 package com.example.dao;
 
+import java.util.List;
+
 import com.example.domain.Team;
 import com.example.persistence.Jpa;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import java.util.List;
 
 public class TeamRepository {
 
