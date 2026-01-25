@@ -13,9 +13,8 @@ public class Team {
 
     private String nameTeam;
 
-    //L'équipe appartient à un créateur(User)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "owner_id") // Nom de la colonne en base
+    @JoinColumn(name = "owner_id") 
     private User owner;
 
     public Team() {}

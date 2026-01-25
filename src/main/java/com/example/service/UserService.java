@@ -1,50 +1,48 @@
 package com.example.service;
 
 import java.util.List;
-
 import com.example.dao.UserRepository;
 import com.example.domain.User;
-import com.example.messaging.UserCreatedProducer;
-import com.example.persistence.Jpa;
-
-import jakarta.persistence.EntityManager;
+import com.example.messaging.AuditProducer; 
 
 public class UserService {
 
-    private EntityManager em = Jpa.getEntityManager();
-    private UserCreatedProducer producer = new UserCreatedProducer();
+    private final UserRepository userRepository = new UserRepository();
+    private final AuditProducer auditProducer = new AuditProducer(); 
 
     public User createUser(User user) {
-        try {
-            em.getTransaction().begin();
-            em.persist(user);
-            em.getTransaction().commit();
-            producer.sendUserCreatedEvent(user.getId(), user.getEmail());
 
-            return user;
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            throw e;
-        }
+        User savedUser = userRepository.save(user);
+        auditProducer.sendAuditMessage(
+            "USER_CREATED", 
+            "User", 
+            "Email: " + savedUser.getEmail()
+        );
+
+        return savedUser;
     }
 
     public List<User> getAllUsers() {
-        return em.createQuery("SELECT u FROM User u", User.class)
-                .getResultList();
+        return userRepository.findAll();
     }
 
     public User getUserById(Long id) {
-        return em.find(User.class, id);
+        return userRepository.findById(id);
     }
 
     public User updateUser(User user) {
-        return userRepository.update(user);
+        User updated = userRepository.update(user);
+        if (updated != null) {
+            auditProducer.sendAuditMessage("USER_UPDATED", "User", "ID: " + updated.getId());
+        }
+        return updated;
     }
-
-    private final UserRepository userRepository = new UserRepository();
 
     public boolean deleteUser(Long id) {
-        return userRepository.delete(id);
+        boolean deleted = userRepository.delete(id);
+        if (deleted) {
+            auditProducer.sendAuditMessage("USER_DELETED", "User", "ID: " + id);
+        }
+        return deleted;
     }
-
 }

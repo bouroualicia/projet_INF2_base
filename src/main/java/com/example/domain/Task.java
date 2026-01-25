@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "tasks")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) //pour régler pb du Lazy Loading
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"}) 
 public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,19 +15,16 @@ public class Task {
     private String description;
     private String date;
 
-    //La tâche est assignée à UN utilisateur
-    @ManyToOne(fetch = FetchType.LAZY) // Indispensable pour le barème
+    @ManyToOne(fetch = FetchType.LAZY) 
     @JoinColumn(name = "user_id")
     private User user;
 
-    //La tâche appartient à UNE équipe
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "team_id")
     private Team team;
 
     public Task() {}
 
-    // Getters et Setters
     public Long getIdTask() { return idTask; }
     public void setIdTask(Long idTask) { this.idTask = idTask; }
     public String getNameTask() { return nameTask; }

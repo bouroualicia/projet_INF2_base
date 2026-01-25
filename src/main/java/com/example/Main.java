@@ -1,13 +1,11 @@
 package com.example;
 
 import java.net.URI;
- 
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 
-import com.example.messaging.AuditListener;
-import com.example.messaging.UserCreatedListener;
+import com.example.messaging.AuditListener; 
 
 public class Main {
 
@@ -24,10 +22,10 @@ public class Main {
         );
 
         System.out.println("\n🚀 API server running on " + BASE_URI);
-
-        new Thread(new UserCreatedListener()).start();
         new Thread(new AuditListener()).start(); 
         
+        System.out.println("👂 Audit Listener is active...");
+
         Thread.currentThread().join();
     }
 }

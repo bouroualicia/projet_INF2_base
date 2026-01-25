@@ -15,28 +15,39 @@ public class TaskRepository {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-
-            // On lie les objets avant de sauvegarder
+    
             if (userId != null) {
-                task.setUser(em.find(User.class, userId));
+                User user = em.find(User.class, userId);
+                if (user != null) task.setUser(user);
             }
             if (teamId != null) {
-                task.setTeam(em.find(Team.class, teamId));
+                Team team = em.find(Team.class, teamId);
+                if (team != null) task.setTeam(team);
             }
-
+    
             if (task.getIdTask() == null) {
                 em.persist(task);
             } else {
                 task = em.merge(task);
             }
+
+            em.flush(); 
+            
             tx.commit();
 
-            return this.findById(task.getIdTask());
+            return em.createQuery(
+                    "SELECT t FROM Task t " +
+                    "LEFT JOIN FETCH t.user " +
+                    "LEFT JOIN FETCH t.team " +
+                    "WHERE t.idTask = :id", Task.class)
+                    .setParameter("id", task.getIdTask())
+                    .getSingleResult();
+            
         } catch (Exception e) {
             if (tx.isActive()) tx.rollback();
             throw e;
         } finally {
-            em.close();
+            em.close(); 
         }
     }
 
@@ -44,23 +55,24 @@ public class TaskRepository {
         EntityManager em = Jpa.getEntityManager();
         try {
             return em.createQuery(
-                    "SELECT DISTINCT t FROM Task t LEFT JOIN FETCH t.user LEFT JOIN FETCH t.team",
+                    "SELECT DISTINCT t FROM Task t " +
+                    "LEFT JOIN FETCH t.user " +
+                    "LEFT JOIN FETCH t.team",
                     Task.class).getResultList();
         } finally {
             em.close();
         }
     }
 
-    // ON MODIFIE LE findById POUR UTILISER LE FETCH JOIN
     public Task findById(Long id) {
         EntityManager em = Jpa.getEntityManager();
         try {
             return em.createQuery(
                             "SELECT t FROM Task t " +
-                                    "LEFT JOIN FETCH t.user " +
-                                    "LEFT JOIN FETCH t.team tm " +
-                                    "LEFT JOIN FETCH tm.owner " +
-                                    "WHERE t.idTask = :id", Task.class)
+                            "LEFT JOIN FETCH t.user " +
+                            "LEFT JOIN FETCH t.team tm " +
+                            "LEFT JOIN FETCH tm.owner " +
+                            "WHERE t.idTask = :id", Task.class)
                     .setParameter("id", id)
                     .getSingleResult();
         } catch (Exception e) {

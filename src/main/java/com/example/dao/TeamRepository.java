@@ -1,10 +1,8 @@
 package com.example.dao;
 
 import java.util.List;
-
 import com.example.domain.Team;
 import com.example.persistence.Jpa;
-
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 
@@ -34,26 +32,33 @@ public class TeamRepository {
     public List<Team> findAll() {
         EntityManager em = Jpa.getEntityManager();
         try {
-            return em.createQuery("SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.owner", Team.class)
-                    .getResultList();
+            return em.createQuery(
+                "SELECT DISTINCT t FROM Team t LEFT JOIN FETCH t.owner", 
+                Team.class)
+                .getResultList();
         } finally {
             em.close();
         }
     }
 
+
     public Team findById(Long id) {
         EntityManager em = Jpa.getEntityManager();
         try {
             return em.createQuery(
-                            "SELECT t FROM Team t LEFT JOIN FETCH t.owner WHERE t.id = :id",
-                            Team.class)
-                    .setParameter("id", id)
-                    .getSingleResult();
+                "SELECT t FROM Team t LEFT JOIN FETCH t.owner WHERE t.id = :id",
+                Team.class)
+                .setParameter("id", id)
+                .getSingleResult();
         } catch (Exception e) {
-            return null;
+            return null; 
         } finally {
             em.close();
         }
+    }
+
+    public Team update(Team team) {
+        return save(team); 
     }
 
     public boolean delete(Long id) {
@@ -61,9 +66,9 @@ public class TeamRepository {
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            Team team = em.find(Team.class, id); // On cherche l'équipe par son ID
+            Team team = em.find(Team.class, id);
             if (team != null) {
-                em.remove(team); // On demande la suppression
+                em.remove(team);
                 tx.commit();
                 return true;
             }
